@@ -5,7 +5,17 @@ import type {
 } from '@graphql-tools/utils'
 import type { RequestEvent } from '@sveltejs/kit'
 
-export type Context = RequestEvent & { host: string }
+export type Context = RequestEvent & {
+  shop?: { domain: string }
+  endpoint(
+    path: string,
+    options?: {
+      format?: string
+      shop?: { domain: string }
+      params?: Record<string, unknown>
+    },
+  ): string
+}
 export type Resolvers<Source = unknown> = IResolvers<Source, Context>
 export type Resolver<
   Args = unknown,

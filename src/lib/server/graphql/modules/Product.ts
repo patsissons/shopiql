@@ -2,6 +2,7 @@ import { createModule, gql } from 'graphql-modules'
 import { fetchJson } from '$lib/server/fetchJson'
 import type { Context } from '../types'
 import { camelize } from '../utils'
+import { endpoints } from '../constants'
 
 export const Product = createModule({
   id: 'product',
@@ -49,15 +50,18 @@ export const Product = createModule({
   resolvers: {
     Shop: {
       async products(
-        { host }: { host: string },
-        _args: unknown,
+        shop: { domain: string },
+        { limit = 10, page }: { limit?: number; page?: number } = {},
         context: Context,
       ) {
-        const url = `${host}/products.json`
-        const response = await fetchJson(context.fetch, url)
+        context.shop = shop
+
+        const params = { limit, page }
+
+        const endpoint = context.endpoint(endpoints.product.all, { params })
+        const response = await fetchJson(context.fetch, endpoint)
 
         const { products } = camelize<{ products: unknown[] }>(response)
-        context.host = host
 
         return products
       },
@@ -68,10 +72,9 @@ export const Product = createModule({
         _args: unknown,
         context: Context,
       ) {
-        if (!context.host) return
+        const endpoint = context.endpoint(endpoints.product.product(handle))
+        const response = await fetchJson(context.fetch, endpoint)
 
-        const url = `${context.host}/products/${handle}.json`
-        const response = await fetchJson(context.fetch, url)
         const { product } = camelize<{ product: unknown }>(response)
 
         return product
