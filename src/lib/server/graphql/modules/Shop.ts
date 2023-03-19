@@ -31,16 +31,17 @@ export const Shop = createModule({
   resolvers: {
     Query: {
       async shop(_source: unknown, args: { domain: string }, context: Context) {
-        const domain = args.domain.startsWith('http')
+        const url = args.domain.startsWith('http')
           ? args.domain
           : `https://${args.domain}.myshopify.com`
         const endpoint = context.endpoint(endpoints.store.meta, {
-          shop: { domain },
+          shop: { url },
         })
         const response = await fetchJson(context.fetch, endpoint)
-        const shop = camelize<{ domain?: string }>(response)
+        const shop = camelize<{ url: string }>(response)
 
-        if (!shop.domain) shop.domain = domain
+        if (!shop.url) shop.url = url
+        context.shop = shop
 
         return shop
       },

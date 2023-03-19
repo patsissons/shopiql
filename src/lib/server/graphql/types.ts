@@ -6,12 +6,12 @@ import type {
 import type { RequestEvent } from '@sveltejs/kit'
 
 export type Context = RequestEvent & {
-  shop?: { domain: string }
+  shop?: { url: string }
   endpoint(
     path: string,
     options?: {
       format?: string
-      shop?: { domain: string }
+      shop?: { url: string }
       params?: Record<string, unknown>
     },
   ): string

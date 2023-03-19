@@ -5,7 +5,7 @@ export const endpoints = {
   product: {
     /** /products.json?limit=10&page=1 */
     all: 'products',
-    /** /products/{handle}.json */
+    /** /products/{handle}.[json|js] */
     product(handle: string) {
       return ['products', handle].join('/')
     },
