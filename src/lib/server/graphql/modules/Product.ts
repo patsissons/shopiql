@@ -1,8 +1,9 @@
 import { createModule, gql } from 'graphql-modules'
-import { fetchJson } from '$lib/server/fetchJson'
 import type { Context } from '../types'
-import { camelize } from '../utils'
-import { endpoints } from '../constants'
+
+import { products } from './resolvers/products'
+import { productJson } from './resolvers/productJson'
+import { productJs } from './resolvers/productJs'
 
 export const Product = createModule({
   id: 'product',
@@ -250,77 +251,48 @@ export const Product = createModule({
   `,
   resolvers: {
     Shop: {
-      async products(
+      products(
         shop: { url: string },
         { limit = 10, page }: { limit?: number; page?: number } = {},
         context: Context,
       ) {
         context.shop = shop
 
-        const params = { limit, page }
-
-        const endpoint = context.endpoint(endpoints.product.all, { params })
-        const response = await fetchJson(context.fetch, endpoint)
-
-        const { products } = camelize<{ products: unknown[] }>(response)
-
-        return products
+        return products(context, limit, page)
       },
-      async productJson(
+      productJson(
         shop: { url: string },
         { handle }: { handle: string },
         context: Context,
       ) {
         context.shop = shop
 
-        const endpoint = context.endpoint(endpoints.product.product(handle))
-        const response = await fetchJson(context.fetch, endpoint)
-
-        const { product } = camelize<{ product: unknown }>(response)
-
-        return product
+        return productJson(context, handle)
       },
-      async productJs(
+      productJs(
         shop: { url: string },
         { handle }: { handle: string },
         context: Context,
       ) {
         context.shop = shop
 
-        const endpoint = context.endpoint(endpoints.product.product(handle), {
-          format: 'js',
-        })
-        const response = await fetchJson(context.fetch, endpoint)
-
-        return camelize(response)
+        return productJs(context, handle)
       },
     },
     ShopProduct: {
-      async productJson(
+      productJson(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
       ) {
-        const endpoint = context.endpoint(endpoints.product.product(handle))
-        const response = await fetchJson(context.fetch, endpoint)
-
-        const { product } = camelize<{ product: unknown }>(response)
-
-        return product
+        return productJson(context, handle)
       },
-      async productJs(
+      productJs(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
       ) {
-        console.log('D', context.shop)
-
-        const endpoint = context.endpoint(endpoints.product.product(handle), {
-          format: 'js',
-        })
-        const response = await fetchJson(context.fetch, endpoint)
-
-        return camelize(response)
+        return productJs(context, handle)
       },
     },
   },
