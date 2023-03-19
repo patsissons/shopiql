@@ -55,6 +55,7 @@ export const Product = createModule({
 
     type ProductJSON {
       id: ID!
+      _data: JSONObject
       title: String
       bodyHtml: String
       vendor: String
@@ -185,6 +186,7 @@ export const Product = createModule({
 
     type ProductJS {
       id: ID!
+      _data: JSONObject
       title: String
       handle: String!
       description: String
@@ -227,6 +229,7 @@ export const Product = createModule({
 
     type ShopProduct {
       id: ID!
+      _data: JSONObject
       title: String
       handle: String
       bodyHtml: String
@@ -280,6 +283,9 @@ export const Product = createModule({
       },
     },
     ShopProduct: {
+      _data(source: unknown) {
+        return source
+      },
       productJson(
         { handle }: { handle: string },
         _args: unknown,
@@ -293,6 +299,16 @@ export const Product = createModule({
         context: Context,
       ) {
         return productJs(context, handle)
+      },
+    },
+    ProductJSON: {
+      _data(source: unknown) {
+        return source
+      },
+    },
+    ProductJS: {
+      _data(source: unknown) {
+        return source
       },
     },
   },

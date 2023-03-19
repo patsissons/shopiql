@@ -8,6 +8,7 @@ export const Shop = createModule({
   typeDefs: gql`
     type Shop {
       id: ID!
+      _data: JSONObject!
       city: String
       currency: String
       description: String
@@ -31,6 +32,11 @@ export const Shop = createModule({
     Query: {
       shop(_source: unknown, { domain }: { domain: string }, context: Context) {
         return shop(context, domain)
+      },
+    },
+    Shop: {
+      _data(source: unknown) {
+        return source
       },
     },
   },

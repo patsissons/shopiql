@@ -122,6 +122,7 @@ export const search = createModule({
     }
 
     type SearchResult {
+      _data: JSONObject!
       queries: [SearchQueryResult!]
       products: [SearchProductResult!]
       collections: [SearchCollectionResult!]
@@ -160,6 +161,11 @@ export const search = createModule({
         context.shop = shop
 
         return suggest(context, query, options)
+      },
+    },
+    SearchResult: {
+      _data(source: unknown) {
+        return source
       },
     },
     SearchProductResult: {
