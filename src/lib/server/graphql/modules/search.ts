@@ -1,8 +1,7 @@
 import { createModule, gql } from 'graphql-modules'
 import type { Context } from '../types'
 
-import { productJson } from './resolvers/productJson'
-import { productJs } from './resolvers/productJs'
+import { productJs, productJson } from './resolvers/products'
 import { suggest } from './resolvers/suggest'
 
 // see: https://shopify.dev/docs/api/ajax/reference/predictive-search#get-locale-search-suggest
@@ -144,7 +143,7 @@ export const search = createModule({
   resolvers: {
     Shop: {
       search(
-        shop: { url: string },
+        _source: unknown,
         {
           query,
           ...options
@@ -158,8 +157,6 @@ export const search = createModule({
         },
         context: Context,
       ) {
-        context.shop = shop
-
         return suggest(context, query, options)
       },
     },

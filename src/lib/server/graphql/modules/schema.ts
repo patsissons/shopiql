@@ -8,6 +8,9 @@ export const schema = createModule({
     scalar JSONObject
 
     type Query {
+      """
+      Basic GraphQL health check, returns "PONG"
+      """
       ping: String
     }
 

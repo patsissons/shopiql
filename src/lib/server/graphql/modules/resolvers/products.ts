@@ -13,3 +13,21 @@ export async function products(context: Context, limit: number, page?: number) {
 
   return products
 }
+
+export async function productJson(context: Context, handle: string) {
+  const endpoint = context.endpoint(endpoints.product.product(handle))
+  const response = await fetchJson(context.fetch, endpoint)
+
+  const { product } = camelize<{ product: unknown }>(response)
+
+  return product
+}
+
+export async function productJs(context: Context, handle: string) {
+  const endpoint = context.endpoint(endpoints.product.product(handle), {
+    format: 'js',
+  })
+  const response = await fetchJson(context.fetch, endpoint)
+
+  return camelize(response)
+}
