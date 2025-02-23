@@ -6,14 +6,15 @@ import type { Context } from './types'
 export function context(event: RequestEvent): Context {
   return {
     ...event,
+    store: {},
     endpoint(this: Context, path, { format = 'json', shop, params } = {}) {
-      const baseUrl = shop?.url || this.shop?.url
+      const baseUrl = shop?.url || this.store.shop?.url
       if (!baseUrl) throw new Error('shop base url missing from context')
 
       const urlParams =
         params &&
         new URLSearchParams(omitBy(params as Record<string, string>, isNil))
-      const url = new URL([path, format].join('.'), baseUrl)
+      const url = new URL(format ? [path, format].join('.') : path, baseUrl)
 
       if (!urlParams) return url.toString()
 

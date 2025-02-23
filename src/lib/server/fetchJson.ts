@@ -14,7 +14,6 @@ export async function fetchJson<Result = Record<string, unknown>>(
   fetch: Fetch,
   url: string,
 ): Promise<Result> {
-  // console.log('D', url)
   const response = await fetch(url, {
     headers: {
       accept: 'application/json; charset=utf8;',
@@ -30,8 +29,6 @@ export async function fetchJson<Result = Record<string, unknown>>(
   }
 
   const payload = await response.json()
-
-  // console.log('D', payload)
 
   return payload
 }

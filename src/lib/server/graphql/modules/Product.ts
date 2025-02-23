@@ -1,9 +1,12 @@
 import { createModule, gql } from 'graphql-modules'
 import type { Context } from '../types'
 
-import { products } from './resolvers/products'
-import { productJson } from './resolvers/productJson'
-import { productJs } from './resolvers/productJs'
+import {
+  productJs,
+  product,
+  productRecommendations,
+  products,
+} from './resolvers/products'
 
 export const Product = createModule({
   id: 'product',
@@ -53,8 +56,11 @@ export const Product = createModule({
       variantIds: [ID!]
     }
 
-    type ProductJSON {
+    type Product {
       id: ID!
+      """
+      _data emits the raw data payload when loading the shop product, may contain additional data that is not captured as a GraphQL field.
+      """
       _data: JSONObject
       title: String
       bodyHtml: String
@@ -71,6 +77,10 @@ export const Product = createModule({
       options: [ProductJSONOption!]
       images: [ProductJSONImage!]
       image: ProductJSONImage
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     type ProductJSVariantSellingPlanAllocationPriceAdjustment {
@@ -186,6 +196,9 @@ export const Product = createModule({
 
     type ProductJS {
       id: ID!
+      """
+      _data emits the raw data payload when loading the shop product, may contain additional data that is not captured as a GraphQL field.
+      """
       _data: JSONObject
       title: String
       handle: String!
@@ -211,6 +224,10 @@ export const Product = createModule({
       media: [ProductJSMedia!]
       requiresSellingPlan: Boolean
       sellingPlanGroups: [ProductJSSellingPlanGroup!]
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     type ShopProductVariant {
@@ -229,6 +246,9 @@ export const Product = createModule({
 
     type ShopProduct {
       id: ID!
+      """
+      _data emits the raw data payload when loading the shop product, may contain additional data that is not captured as a GraphQL field.
+      """
       _data: JSONObject
       title: String
       handle: String
@@ -242,43 +262,56 @@ export const Product = createModule({
       variants: [ShopProductVariant!]
       images: [ShopProductImage!]
       options: [ShopProductOption!]
-      productJson: ProductJSON!
-      productJs: ProductJS!
+      """
+      More detailed product information (JSON format).
+      """
+      productDetails: Product!
+      """
+      More detailed product information (JS format).
+      """
+      productDetailsJs: ProductJS!
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     extend type Shop {
+      """
+      List of all products in the shop.
+      """
       products(limit: Int, page: Int): [ShopProduct!]!
-      productJson(handle: String!): ProductJSON
+      """
+      Product by handle, in JSON format.
+      """
+      product(handle: String!): Product
+      """
+      Product by handle, in JS format.
+      """
       productJs(handle: String!): ProductJS
     }
   `,
   resolvers: {
     Shop: {
       products(
-        shop: { url: string },
+        _source: unknown,
         { limit = 10, page }: { limit?: number; page?: number } = {},
         context: Context,
       ) {
-        context.shop = shop
-
         return products(context, limit, page)
       },
-      productJson(
-        shop: { url: string },
+      product(
+        _source: unknown,
         { handle }: { handle: string },
         context: Context,
       ) {
-        context.shop = shop
-
-        return productJson(context, handle)
+        return product(context, handle)
       },
       productJs(
-        shop: { url: string },
+        _source: unknown,
         { handle }: { handle: string },
         context: Context,
       ) {
-        context.shop = shop
-
         return productJs(context, handle)
       },
     },
@@ -286,29 +319,50 @@ export const Product = createModule({
       _data(source: unknown) {
         return source
       },
-      productJson(
+      productDetails(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
       ) {
-        return productJson(context, handle)
+        return product(context, handle)
       },
-      productJs(
+      productDetailsJs(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
       ) {
         return productJs(context, handle)
       },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
+      },
     },
-    ProductJSON: {
+    Product: {
       _data(source: unknown) {
         return source
+      },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
       },
     },
     ProductJS: {
       _data(source: unknown) {
         return source
+      },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
       },
     },
   },

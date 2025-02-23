@@ -6,7 +6,9 @@ import type {
 import type { RequestEvent } from '@sveltejs/kit'
 
 export type Context = RequestEvent & {
-  shop?: { url: string }
+  store: {
+    shop?: { url: string }
+  }
   endpoint(
     path: string,
     options?: {

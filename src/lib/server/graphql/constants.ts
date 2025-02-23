@@ -1,5 +1,6 @@
 export const endpoints = {
   store: {
+    /** /meta.json */
     meta: 'meta',
   },
   product: {
@@ -11,13 +12,25 @@ export const endpoints = {
     },
   },
   collection: {
+    /** /collections.json?limit=10&page=1 */
     all: 'collections',
+    /** /collections/all/products.json?limit=10&page=1 */
     allProducts: ['collections', 'all', 'products'].join('/'),
+    /** /collections/{handle}.json */
     collection(handle: string) {
       return ['collections', handle].join('/')
     },
+    /** /collections/{handle}/products.json?limit=10&page=1 */
     products(handle: string) {
       return ['collections', handle, 'products'].join('/')
+    },
+  },
+  pages: {
+    /** /pages.json?limit=10&page=1 */
+    all: 'pages',
+    /** /pages/{handle}.json */
+    page(handle: string) {
+      return ['pages', handle].join('/')
     },
   },
   recommendations: {

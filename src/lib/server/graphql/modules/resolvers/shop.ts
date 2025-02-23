@@ -6,7 +6,7 @@ import { camelize } from '../../utils'
 export async function shop(context: Context, domain: string) {
   const url = domain.startsWith('http')
     ? domain
-    : `https://${domain}.myshopify.com`
+    : `https://${domain.replace('.myshopify.com', '')}.myshopify.com`
   const endpoint = context.endpoint(endpoints.store.meta, {
     shop: { url },
   })
@@ -17,4 +17,16 @@ export async function shop(context: Context, domain: string) {
   context.shop = shop
 
   return shop
+}
+
+export async function rawData(
+  context: Context,
+  path: string,
+  options: { format?: string; params?: Record<string, unknown> },
+) {
+  const endpoint = context.endpoint(path, options)
+  const response = await fetchJson(context.fetch, endpoint).catch((error) => ({
+    error,
+  }))
+  return response
 }
