@@ -1,7 +1,12 @@
 import { createModule, gql } from 'graphql-modules'
 import type { Context } from '../types'
 
-import { productJs, productJson, products } from './resolvers/products'
+import {
+  productJs,
+  productJson,
+  productRecommendations,
+  products,
+} from './resolvers/products'
 
 export const Product = createModule({
   id: 'product',
@@ -72,6 +77,10 @@ export const Product = createModule({
       options: [ProductJSONOption!]
       images: [ProductJSONImage!]
       image: ProductJSONImage
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     type ProductJSVariantSellingPlanAllocationPriceAdjustment {
@@ -215,6 +224,10 @@ export const Product = createModule({
       media: [ProductJSMedia!]
       requiresSellingPlan: Boolean
       sellingPlanGroups: [ProductJSSellingPlanGroup!]
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     type ShopProductVariant {
@@ -251,6 +264,10 @@ export const Product = createModule({
       options: [ShopProductOption!]
       productJson: ProductJSON!
       productJs: ProductJS!
+      """
+      List of recommended products for this product.
+      """
+      recommendations(limit: Int, page: Int): [ShopProduct!]
     }
 
     extend type Shop {
@@ -310,15 +327,36 @@ export const Product = createModule({
       ) {
         return productJs(context, handle)
       },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
+      },
     },
     ProductJSON: {
       _data(source: unknown) {
         return source
       },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
+      },
     },
     ProductJS: {
       _data(source: unknown) {
         return source
+      },
+      recommendations(
+        { id }: { id: string },
+        { limit = 10, page }: { limit?: number; page?: number },
+        context: Context,
+      ) {
+        return productRecommendations(context, id, limit, page)
       },
     },
   },

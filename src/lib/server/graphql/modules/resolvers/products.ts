@@ -31,3 +31,20 @@ export async function productJs(context: Context, handle: string) {
 
   return camelize(response)
 }
+
+export async function productRecommendations(
+  context: Context,
+  product_id: string,
+  limit: number,
+  page?: number,
+) {
+  const params = { product_id, limit, page }
+
+  const endpoint = context.endpoint(endpoints.recommendations.products, {
+    params,
+  })
+  const response = await fetchJson(context.fetch, endpoint)
+  const { products } = camelize<{ products: unknown[] }>(response)
+
+  return products
+}
