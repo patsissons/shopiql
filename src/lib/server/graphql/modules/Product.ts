@@ -3,7 +3,7 @@ import type { Context } from '../types'
 
 import {
   productJs,
-  productJson,
+  product,
   productRecommendations,
   products,
 } from './resolvers/products'
@@ -56,7 +56,7 @@ export const Product = createModule({
       variantIds: [ID!]
     }
 
-    type ProductJSON {
+    type Product {
       id: ID!
       """
       _data emits the raw data payload when loading the shop product, may contain additional data that is not captured as a GraphQL field.
@@ -262,8 +262,14 @@ export const Product = createModule({
       variants: [ShopProductVariant!]
       images: [ShopProductImage!]
       options: [ShopProductOption!]
-      productJson: ProductJSON!
-      productJs: ProductJS!
+      """
+      More detailed product information (JSON format).
+      """
+      productDetails: Product!
+      """
+      More detailed product information (JS format).
+      """
+      productDetailsJs: ProductJS!
       """
       List of recommended products for this product.
       """
@@ -278,7 +284,7 @@ export const Product = createModule({
       """
       Product by handle, in JSON format.
       """
-      productJson(handle: String!): ProductJSON
+      product(handle: String!): Product
       """
       Product by handle, in JS format.
       """
@@ -294,12 +300,12 @@ export const Product = createModule({
       ) {
         return products(context, limit, page)
       },
-      productJson(
+      product(
         _source: unknown,
         { handle }: { handle: string },
         context: Context,
       ) {
-        return productJson(context, handle)
+        return product(context, handle)
       },
       productJs(
         _source: unknown,
@@ -313,14 +319,14 @@ export const Product = createModule({
       _data(source: unknown) {
         return source
       },
-      productJson(
+      productDetails(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
       ) {
-        return productJson(context, handle)
+        return product(context, handle)
       },
-      productJs(
+      productDetailsJs(
         { handle }: { handle: string },
         _args: unknown,
         context: Context,
@@ -335,7 +341,7 @@ export const Product = createModule({
         return productRecommendations(context, id, limit, page)
       },
     },
-    ProductJSON: {
+    Product: {
       _data(source: unknown) {
         return source
       },
