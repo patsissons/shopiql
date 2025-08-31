@@ -6,7 +6,7 @@ import type { Context } from './types'
 
 export const server = createYoga<Context>({
   logging: true,
-  fetchAPI: globalThis,
+  fetchAPI: { Response },
   plugins: [useGraphQLModules(app)],
   graphqlEndpoint: '/api/graphql',
   context,
