@@ -14,7 +14,7 @@ export async function shop(context: Context, domain: string) {
   const shop = camelize<{ url: string }>(response)
 
   if (!shop.url) shop.url = url
-  context.shop = shop
+  context.store.shop = shop
 
   return shop
 }
